@@ -34,7 +34,7 @@ body {
     background-color: #f06868;
 }
 
-#board {
+.board {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -108,15 +108,38 @@ body {
 
 .pickpack {
     display: inline-block;
-    font-size: 5vw;
-    margin: 1vw;
+    font-size: 6vw;
+    margin: 2vw;
     padding: 1vw;
     background-color: #80d6ff;
-    width: 25vw;
+    width: 22vw;
+    border-radius: 5px;
+    cursor: pointer;
 }
 
 .pickpack-container {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+@media only screen and (min-width : 320px) and (max-width : 680px) {
+    body {
+        margin-top: 2vh
+    }
+
+    .flip-card {
+        font-size: 15vw;
+        height: 22vw;
+        width: 22vw;
+    }
+
+    .pickpack-container {
+        flex-wrap: wrap;
+    }
+
+    .pickpack {
+        width: 80vw;
+        font-size: 13vw;
+    }
 }

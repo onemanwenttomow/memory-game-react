@@ -14,7 +14,7 @@ class App extends Component {
             currentScore: 0,
             choiceOfPacks: [
                 ["🐶", "🐱", "🦄", "🐮", "🐷", "🐔", "🐸", "🦊", "🐵", "🦁", "🐺", "🦓"],
-                ["⚾", "⚽", "🏉", "🏈", "🎾", "🎳", "🏏", "🏑", "⛳",  "🥇", "⛳", "🎽"],
+                ["⚾", "⚽", "🏉", "🏈", "🎾", "🎳", "🏏", "🏑", "⛳",  "🥇", "🏄", "🎽"],
                 ["🚅", "🚂", "🚌", "🚑", "🚒", "🚓", "🚕", "🚚", "🏎️", "🏍️", "🚲", "✈️"]
             ]
         };
@@ -23,10 +23,7 @@ class App extends Component {
         this.handleClick = this.handleClick.bind(this);
         this.setupNewGame = this.setupNewGame.bind(this);
     }
-    componentDidMount() {
-        // this.setupNewGame();
-    }
-    setupNewGame(index) {
+    setupNewGame(deckNumber) {
         this.setState({
             shuffledCards: [],
             selectedCards: [],
@@ -37,9 +34,7 @@ class App extends Component {
             currentScore: 0,
             gameStarted: true
         })
-        console.log(index);
-        console.log(this.state.choiceOfPacks);
-        var totalCards = this.state.choiceOfPacks[index].concat(this.state.choiceOfPacks[index].slice());
+        var totalCards = this.state.choiceOfPacks[deckNumber].concat(this.state.choiceOfPacks[deckNumber].slice());
         this.setState({
             shuffledCards: this.shuffleArray(totalCards)
             // shuffledCards: totalCards
@@ -55,33 +50,45 @@ class App extends Component {
         return array;
     }
     handleClick(card, index) {
+        // don't allow click during animation
         if (this.state.isInMotion) {
             return;
         }
-
+        // grab the currently selected card (if any) from state
         let currentSelectedCard = this.state.selectedCards;
+
+        // don't allow the user to click the same card again.
         if (this.state.selectedCards.length === 1) {
             if (this.state.selectedCards[0].index === index) {
+                console.log("already clicked!");
                 return;
             }
         }
-
+        // add the current card and it's index an array.
         currentSelectedCard.push({card, index});
 
+        // if there is only 1 card selected. Update state.
         if (currentSelectedCard.length === 1) {
+            console.log("one card selected");
             this.setState({
                 selectedCards: currentSelectedCard,
                 firstSelectedIndex: index
             });
+        // if 2 cards are selected.
         } else if (currentSelectedCard.length === 2) {
+            console.log("two cards selected");
             if (this.state.selectedCards[0].index === index) {
                 return;
             }
+            // update state.
             this.setState({
                 selectedCards: currentSelectedCard,
                 secondSelectedIndex: index,
                 isInMotion: true
             });
+            // and then check for a pair.
+            this.checkForPair();
+
             setTimeout(() => {
                 this.setState({
                     selectedCards: [],
@@ -92,30 +99,27 @@ class App extends Component {
             }, 1000)
         }
 
-        this.checkForPair()
     }
     checkForPair() {
-        if (this.state.selectedCards.length === 2) {
-            if (this.state.selectedCards[0].card === this.state.selectedCards[1].card) {
-                this.setState({ isInMotion: true });
-                setTimeout(() => {
-                    let newPairs = this.state.pairs;
-                    newPairs.push(this.state.selectedCards[0].index, this.state.selectedCards[1].index);
-                    let currentScore = this.state.currentScore;
-                    currentScore += 2;
+        if (this.state.selectedCards[0].card === this.state.selectedCards[1].card) {
+            this.setState({ isInMotion: true });
+            setTimeout(() => {
+                let newPairs = this.state.pairs;
+                newPairs.push(this.state.selectedCards[0].index, this.state.selectedCards[1].index);
+                let currentScore = this.state.currentScore;
+                currentScore += 2;
+                this.setState({
+                    pairs: newPairs,
+                    isInMotion: false,
+                    currentScore: currentScore
+                })
+                if (currentScore === this.state.shuffledCards.length) {
+                    newPairs = [];
                     this.setState({
-                        pairs: newPairs,
-                        isInMotion: false,
-                        currentScore: currentScore
+                        gameStarted: false
                     })
-                    if (currentScore === this.state.shuffledCards.length) {
-                        newPairs = [];
-                        this.setState({
-                            gameStarted: false
-                        })
-                    }
-                }, 900)
-            }
+                }
+            }, 900)
         }
     }
     render() {
@@ -128,7 +132,7 @@ class App extends Component {
                         )
                     )}
                 </div>
-                <div id="board">
+                <div className={this.state.gameStarted ? "board" : "board hidden"}>
                     { this.state.shuffledCards.map(
                         (card, index) => (
                             <div className={this.state.pairs.includes(index) ? "flip-card pair" : "flip-card"} key={index} onClick={e => this.handleClick(card, index)}>
