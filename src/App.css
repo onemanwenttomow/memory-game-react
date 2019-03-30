@@ -85,25 +85,31 @@ body {
     transform: rotateY(180deg);
 }
 
-.pair {
-    visibility: hidden;
-}
+.pair { visibility: hidden; }
 
-.hidden {
-    display: none;
-}
+.hidden { display: none; }
 
-.restart-button {
-    position: absolute;
-    top: 20vh;
-    background-color: #80d6ff;
-    padding: 5vw;
-    font-size: 10vw;
-    color: #f06868;
-    cursor: pointer;
+.number-of-players {
+    font-family: Bookman;
+    display: inline-block;
+    padding: 1vw;
+    font-size: 6vw;
+    font-weight: 900;
     border-radius: 5px;
-    text-shadow: 0 2px 0 #fab57a;
-    box-shadow: 0 2px 0 #fab57a;
+    color: #edf798;
+}
+
+.num-players {
+    padding: 0.5vw 2vw;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.num-players-selected {
+    background-color: #fab57a;
+}
+
+.num-players-not-selected {
 }
 
 .pickpack {
