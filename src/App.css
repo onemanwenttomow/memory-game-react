@@ -149,6 +149,14 @@ body {
 .current-player-turn {
     border: solid 1vw #edf798;
 }
+.none-player-turn {
+    border: solid 1vw #fab57a;
+}
+
+.greyed {
+    filter: grayscale(100%);
+    opacity: .8;
+}
 
 @media only screen and (min-width : 320px) and (max-width : 680px) {
     body {

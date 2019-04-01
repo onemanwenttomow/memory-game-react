@@ -38,8 +38,9 @@ class App extends Component {
         })
         var totalCards = this.state.choiceOfPacks[deckNumber].concat(this.state.choiceOfPacks[deckNumber].slice());
         this.setState({
-            // shuffledCards: this.shuffleArray(totalCards)
-            shuffledCards: totalCards
+            // shuffledCards: this.shuffleArray(totalCards),
+            shuffledCards: totalCards,
+            pickedPack: this.state.choiceOfPacks[deckNumber]
         });
     }
     numberOfPlayers(num) {
@@ -138,7 +139,8 @@ class App extends Component {
         this.setState({ cardsFound: currentPlayerCards })
     }
     render() {
-        let playerTwoTurn = this.state.playerTurn === 2 ? "current-player-turn" : "";
+        console.log(this.state);
+        let playerTwoTurn = this.state.playerTurn === 2 ? "current-player-turn" : "none-player-turn";
         let twoPlayers = this.state.numberOfPlayers === 2 ? "score-counter" : "hidden"
         return (
             <div className="App">
@@ -157,19 +159,19 @@ class App extends Component {
                     )}
                 </div>
                 <div className={this.state.gameStarted ? "score-container" : "hidden"}>
-                    <div className={this.state.playerTurn === 1 ? "score-counter current-player-turn"  : "score-counter"}>
-                        { this.state.cardsFound && this.state.cardsFound[0].map(
+                    <div className={this.state.playerTurn === 1 ? "score-counter current-player-turn"  : "score-counter none-player-turn"}>
+                        { this.state.cardsFound && this.state.pickedPack.map(
                             (card, index) => (
-                                <div className="" key={index} >{card}</div>
+                                <div className={this.state.cardsFound[0].includes(card) ? "" : "greyed"} key={index} >{card}</div>
                             )
                         )}
                     </div>
                     <div className={`${playerTwoTurn} ${twoPlayers}`}>
-                        { this.state.cardsFound && this.state.cardsFound[1].map(
-                            (card, index) => (
-                                <div className="" key={index} >{card}</div>
-                            )
-                        )}
+                    { this.state.cardsFound && this.state.pickedPack.map(
+                        (card, index) => (
+                            <div className={this.state.cardsFound[1].includes(card) ? "" : "greyed"} key={index} >{card}</div>
+                        )
+                    )}
                     </div>
                 </div>
                 <div className={this.state.gameStarted ? "board" : "board hidden"}>
