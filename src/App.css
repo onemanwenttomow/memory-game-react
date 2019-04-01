@@ -129,6 +129,27 @@ body {
     align-items: center;
 }
 
+.score-container {
+    display: flex;
+    justify-content: space-around;
+}
+
+.score-counter {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    background-color: #fab57a;
+    height: 10vw;
+    width: 30vw;
+    margin: 2vw;
+    border-radius: 5px;
+    font-size: 3vw;
+}
+.current-player-turn {
+    border: solid 1vw #edf798;
+}
+
 @media only screen and (min-width : 320px) and (max-width : 680px) {
     body {
         margin-top: 2vh
@@ -147,5 +168,11 @@ body {
     .pickpack {
         width: 80vw;
         font-size: 13vw;
+    }
+
+    .score-counter {
+        height: 15vw;
+        width: 48vw;
+        font-size: 4vw;
     }
 }
