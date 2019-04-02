@@ -25,6 +25,7 @@ class App extends Component {
         this.updateScore = this.updateScore.bind(this);
         this.restartGame = this.restartGame.bind(this);
         this.gameMode = this.gameMode.bind(this);
+        this.randomShuffle = this.randomShuffle.bind(this);
     }
     setupNewGame(deckNumber) {
         this.setState({
@@ -40,18 +41,37 @@ class App extends Component {
                 [], []
             ],
             playerTurn: 1,
-            turnsLeft: 30
+            turnsLeft: 25
         })
         var totalCards = this.state.choiceOfPacks[deckNumber].concat(this.state.choiceOfPacks[deckNumber].slice());
         this.setState({
-            shuffledCards: this.shuffleArray(totalCards),
-            // shuffledCards: totalCards,
+            // shuffledCards: this.shuffleArray(totalCards),
+            shuffledCards: totalCards,
             pickedPack: this.state.choiceOfPacks[deckNumber]
         });
+        if (this.state.gameModeSelected === "ultra") {
+            this.randomShuffle();
+        }
+    }
+    randomShuffle() {
+        setTimeout(() => {
+            let totalCards = this.state.shuffledCards
+            this.setState({ shuffledCards: this.shuffleArray(totalCards) });
+            if (this.state.restartGameButton) {
+                return;
+            } else {
+                this.randomShuffle()
+            }
+        }, 15000)
     }
     gameMode(mode) {
-        console.log("mode selected!", mode);
-        mode === "normal" ? this.setState({gameModeSelected: "normal"}) : this.setState({gameModeSelected: "hard"})
+        if (mode === "normal") {
+            this.setState({gameModeSelected: "normal"})
+        } else if (mode === "hard") {
+            this.setState({gameModeSelected: "hard"})
+        } else {
+            this.setState({gameModeSelected: "ultra"})
+        }
     }
     numberOfPlayers(num) {
         num === 1 ? this.setState({numberOfPlayers: 1}) : this.setState({numberOfPlayers: 2})
@@ -98,11 +118,13 @@ class App extends Component {
         // if 2 cards are selected.
         } else if (currentSelectedCard.length === 2) {
             if (this.state.selectedCards[0].index === index) { return; }
-            // update state.
-            let turnsLeft = this.state.turnsLeft;
-            turnsLeft--;
-            if (turnsLeft === 0) {
-                this.setState({gameOverButton: true});
+
+            if (this.state.gameModeSelected === "hard")  {
+                var turnsLeft = this.state.turnsLeft;
+                turnsLeft--;
+                if (turnsLeft === 0) {
+                    this.setState({gameOverButton: true});
+                }
             }
             this.setState({
                 selectedCards: currentSelectedCard,
@@ -114,6 +136,14 @@ class App extends Component {
             if (this.checkForPair()) {
                 setTimeout(() => {
                     this.updateScore(card)
+                    // let newShuffledCards = this.state.shuffledCards;
+                    // let leftOverCards = newShuffledCards.map(function(item) {
+                    //     if (item === card) {
+                    //         return " ";
+                    //       } else {
+                    //         return item;
+                    //       }
+                    // } )
                     let newPairs = this.state.pairs;
                     newPairs.push(this.state.selectedCards[0].index, this.state.selectedCards[1].index);
                     let currentScore = this.state.currentScore;
@@ -184,6 +214,7 @@ class App extends Component {
                         Mode: {' '}
                         <span onClick={() => this.gameMode("normal")} className={this.state.gameModeSelected === "normal" ? "num-players num-players-selected" : "num-players"}>Normal</span>
                         <span onClick={() => this.gameMode("hard")} className={this.state.gameModeSelected === "hard" ? "num-players num-players-selected" : "num-players"}>Hard</span>
+                        <span onClick={() => this.gameMode("ultra")} className={this.state.gameModeSelected === "ultra" ? "num-players num-players-selected" : "num-players"}>Ultra</span>
                     </div>
                 </div>
 
