@@ -8,6 +8,8 @@ class App extends Component {
             shuffledCards: [],
             numberOfPlayers: 1,
             restartGameButton: false,
+            gameOverButton: false,
+            gameModeSelected: "normal",
             choiceOfPacks: [
                 ["🐶", "🐱", "🦄", "🐮", "🐷", "🐔", "🐸", "🦊", "🐵", "🦁", "🐺", "🦓"],
                 ["⚾", "⚽", "🏉", "🏈", "🎾", "🎳", "🏏", "🏑", "⛳",  "🥇", "🏄", "🎽"],
@@ -22,6 +24,7 @@ class App extends Component {
         this.changeTurns = this.changeTurns.bind(this);
         this.updateScore = this.updateScore.bind(this);
         this.restartGame = this.restartGame.bind(this);
+        this.gameMode = this.gameMode.bind(this);
     }
     setupNewGame(deckNumber) {
         this.setState({
@@ -36,15 +39,19 @@ class App extends Component {
             cardsFound: [
                 [], []
             ],
-            playerTurn: 1
-
+            playerTurn: 1,
+            turnsLeft: 30
         })
         var totalCards = this.state.choiceOfPacks[deckNumber].concat(this.state.choiceOfPacks[deckNumber].slice());
         this.setState({
-            // shuffledCards: this.shuffleArray(totalCards),
-            shuffledCards: totalCards,
+            shuffledCards: this.shuffleArray(totalCards),
+            // shuffledCards: totalCards,
             pickedPack: this.state.choiceOfPacks[deckNumber]
         });
+    }
+    gameMode(mode) {
+        console.log("mode selected!", mode);
+        mode === "normal" ? this.setState({gameModeSelected: "normal"}) : this.setState({gameModeSelected: "hard"})
     }
     numberOfPlayers(num) {
         num === 1 ? this.setState({numberOfPlayers: 1}) : this.setState({numberOfPlayers: 2})
@@ -65,7 +72,8 @@ class App extends Component {
         console.log("restart!");
         this.setState({
             gameStarted: false,
-            restartGameButton: false
+            restartGameButton: false,
+            gameOverButton: false
         })
     }
     handleClick(card, index) {
@@ -91,10 +99,16 @@ class App extends Component {
         } else if (currentSelectedCard.length === 2) {
             if (this.state.selectedCards[0].index === index) { return; }
             // update state.
+            let turnsLeft = this.state.turnsLeft;
+            turnsLeft--;
+            if (turnsLeft === 0) {
+                this.setState({gameOverButton: true});
+            }
             this.setState({
                 selectedCards: currentSelectedCard,
                 secondSelectedIndex: index,
-                isInMotion: true
+                isInMotion: true,
+                turnsLeft: turnsLeft
             });
             // and then check for a pair.
             if (this.checkForPair()) {
@@ -130,9 +144,7 @@ class App extends Component {
                 }, 1000)
             }
         }
-
     }
-
     checkForPair() {
         if (this.state.selectedCards[0].card === this.state.selectedCards[1].card) {
             this.setState({ isInMotion: true });
@@ -146,22 +158,35 @@ class App extends Component {
         currentPlayerCards[this.state.playerTurn -1].push(card);
         this.setState({ cardsFound: currentPlayerCards })
     }
+
     render() {
         console.log(this.state);
         let playerTwoTurn = this.state.playerTurn === 2 ? "current-player-turn" : "none-player-turn";
         let twoPlayers = this.state.numberOfPlayers === 2 ? "score-counter" : "hidden"
         return (
             <div className="App">
+
                 <div className={this.state.restartGameButton ? "restart-button" : "hidden"} onClick={this.restartGame}>
                     Restart
                 </div>
-                <div>
-                    <div className={this.state.gameStarted ? "hidden" : "number-of-players"}>
-                        Number of players: {' '}
+
+                <div className={this.state.gameOverButton ? "gameover-button" : "hidden"} onClick={this.restartGame}>
+                    Game Over!
+                </div>
+
+                <div className={this.state.gameStarted ? "hidden" : "options-container"}>
+                    <div className={this.state.gameStarted ? "hidden" : "options"}>
+                        Players: {' '}
                         <span onClick={() => this.numberOfPlayers(1)} className={this.state.numberOfPlayers === 1 ? "num-players num-players-selected" : "num-players"}>1</span>
                         <span onClick={() => this.numberOfPlayers(2)} className={this.state.numberOfPlayers === 2 ? "num-players num-players-selected" : "num-players"}>2</span>
                     </div>
+                    <div className={this.state.gameStarted ? "hidden" : "options"}>
+                        Mode: {' '}
+                        <span onClick={() => this.gameMode("normal")} className={this.state.gameModeSelected === "normal" ? "num-players num-players-selected" : "num-players"}>Normal</span>
+                        <span onClick={() => this.gameMode("hard")} className={this.state.gameModeSelected === "hard" ? "num-players num-players-selected" : "num-players"}>Hard</span>
+                    </div>
                 </div>
+
                 <div className={this.state.gameStarted ? "hidden" : "pickpack-container"}>
                     { this.state.choiceOfPacks.map(
                         (card, index) => (
@@ -188,6 +213,7 @@ class App extends Component {
                             )
                         )}
                     </div>
+
                     <div className={this.state.gameStarted ? "score-container" : "hidden"}>
                         <div className={this.state.playerTurn === 1 ? "score-counter current-player-turn"  : "score-counter none-player-turn"}>
                             { this.state.cardsFound && this.state.pickedPack.map(
@@ -196,6 +222,11 @@ class App extends Component {
                                 )
                             )}
                         </div>
+
+                        <div className={this.state.gameModeSelected === "hard" ? "score-counter current-player-turn turns-left" : "hidden"}>
+                            {this.state.turnsLeft}
+                        </div>
+
                         <div className={`${playerTwoTurn} ${twoPlayers}`}>
                         { this.state.cardsFound && this.state.pickedPack.map(
                             (card, index) => (

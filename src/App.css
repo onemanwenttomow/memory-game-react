@@ -95,24 +95,33 @@ body {
 
 .hidden { display: none; }
 
-.number-of-players {
+.options-container {
     font-family: Bookman;
-    display: inline-block;
-    padding: 1vw;
-    font-size: 5vw;
-    font-weight: 900;
+    display: inline-flex;
+    color: #f06868;
     border-radius: 5px;
-    color: #edf798;
+    font-size: 3vw;
+    font-weight: 900;
+    padding: 0.5vw;
+    margin: 1vw;
+}
+
+.options {
+    background-color: #80d6ff;
+    border: solid 0.5vw #80d6ff;
+    border-radius: 5px;
+    padding: 1.5vw;
+    margin: 1vw;
 }
 
 .num-players {
-    padding: 0.5vw 2vw;
+    padding: 0.5vw 1.5vw;
     border-radius: 5px;
     cursor: pointer;
 }
 
 .num-players-selected {
-    background-color: #fab57a;
+    background-color: #edf798;
 }
 
 .num-players-not-selected {
@@ -120,11 +129,11 @@ body {
 
 .pickpack {
     display: inline-block;
-    font-size: 5vw;
+    font-size: 4.5vw;
     margin: 2vw;
     padding: 1vw;
     background-color: #80d6ff;
-    width: 19vw;
+    width: 21vw;
     border-radius: 5px;
     cursor: pointer;
 }
@@ -154,6 +163,12 @@ body {
     border-radius: 5px;
     font-size: 3vw;
 }
+
+.turns-left {
+    color: #f06868;
+    font-size: 10vw;
+}
+
 .current-player-turn {
     border: solid 1vw #edf798;
 }
@@ -175,6 +190,20 @@ body {
     border-radius: 5px;
     color: #f06868;
     font-size: 6vw;
+}
+
+.gameover-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 5;
+    position: absolute;
+    background-color:  #80d6ff;
+    color: #f06868;
+    font-weight: 600;
+    min-height: 100vh;
+    min-width: 100vw;
+    font-size: 18vw;
 }
 
 @media only screen and (min-width : 320px) and (max-width : 680px) {
