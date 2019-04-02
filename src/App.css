@@ -39,14 +39,20 @@ body {
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
+    width: 80vw;
+    margin-top: 1vw;
+}
+
+.board-container {
+    display: flex;
 }
 
 .flip-card {
     background-color: transparent;
-    margin: 0.66vw;
-    font-size: 10vw;
-    height: 15vw;
-    width: 15vw;
+    margin: 0.33vw;
+    font-size: 7vw;
+    height: 11vw;
+    width: 11vw;
     perspective: 1000px;
 }
 
@@ -93,7 +99,7 @@ body {
     font-family: Bookman;
     display: inline-block;
     padding: 1vw;
-    font-size: 6vw;
+    font-size: 5vw;
     font-weight: 900;
     border-radius: 5px;
     color: #edf798;
@@ -114,11 +120,11 @@ body {
 
 .pickpack {
     display: inline-block;
-    font-size: 6vw;
+    font-size: 5vw;
     margin: 2vw;
     padding: 1vw;
     background-color: #80d6ff;
-    width: 22vw;
+    width: 19vw;
     border-radius: 5px;
     cursor: pointer;
 }
@@ -131,6 +137,8 @@ body {
 
 .score-container {
     display: flex;
+    flex-wrap: wrap;
+    width: 20vw;
     justify-content: space-around;
 }
 
@@ -140,8 +148,8 @@ body {
     justify-content: center;
     align-items: center;
     background-color: #fab57a;
-    height: 10vw;
-    width: 30vw;
+    height: 20vw;
+    width: 20vw;
     margin: 2vw;
     border-radius: 5px;
     font-size: 3vw;
@@ -155,7 +163,18 @@ body {
 
 .greyed {
     filter: grayscale(100%);
-    opacity: .8;
+    opacity: .3;
+}
+
+.restart-button {
+    position: absolute;
+    top: 30vh;
+    left: 40vw;
+    background-color:  #80d6ff;
+    padding: 1vw;
+    border-radius: 5px;
+    color: #f06868;
+    font-size: 6vw;
 }
 
 @media only screen and (min-width : 320px) and (max-width : 680px) {

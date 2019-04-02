@@ -7,6 +7,7 @@ class App extends Component {
         this.state = {
             shuffledCards: [],
             numberOfPlayers: 1,
+            restartGameButton: false,
             choiceOfPacks: [
                 ["🐶", "🐱", "🦄", "🐮", "🐷", "🐔", "🐸", "🦊", "🐵", "🦁", "🐺", "🦓"],
                 ["⚾", "⚽", "🏉", "🏈", "🎾", "🎳", "🏏", "🏑", "⛳",  "🥇", "🏄", "🎽"],
@@ -20,6 +21,7 @@ class App extends Component {
         this.numberOfPlayers = this.numberOfPlayers.bind(this);
         this.changeTurns = this.changeTurns.bind(this);
         this.updateScore = this.updateScore.bind(this);
+        this.restartGame = this.restartGame.bind(this);
     }
     setupNewGame(deckNumber) {
         this.setState({
@@ -35,6 +37,7 @@ class App extends Component {
                 [], []
             ],
             playerTurn: 1
+
         })
         var totalCards = this.state.choiceOfPacks[deckNumber].concat(this.state.choiceOfPacks[deckNumber].slice());
         this.setState({
@@ -57,6 +60,13 @@ class App extends Component {
             array[j] = temp;
         }
         return array;
+    }
+    restartGame() {
+        console.log("restart!");
+        this.setState({
+            gameStarted: false,
+            restartGameButton: false
+        })
     }
     handleClick(card, index) {
         // don't allow click during animation
@@ -103,10 +113,7 @@ class App extends Component {
                         secondSelectedIndex: null,
                     })
                     if (currentScore === this.state.shuffledCards.length / 2) {
-                        newPairs = [];
-                        this.setState({
-                            gameStarted: false
-                        })
+                        this.setState({ restartGameButton: true })
                     }
                 }, 900)
             } else {
@@ -125,6 +132,7 @@ class App extends Component {
         }
 
     }
+
     checkForPair() {
         if (this.state.selectedCards[0].card === this.state.selectedCards[1].card) {
             this.setState({ isInMotion: true });
@@ -144,6 +152,9 @@ class App extends Component {
         let twoPlayers = this.state.numberOfPlayers === 2 ? "score-counter" : "hidden"
         return (
             <div className="App">
+                <div className={this.state.restartGameButton ? "restart-button" : "hidden"} onClick={this.restartGame}>
+                    Restart
+                </div>
                 <div>
                     <div className={this.state.gameStarted ? "hidden" : "number-of-players"}>
                         Number of players: {' '}
@@ -158,38 +169,41 @@ class App extends Component {
                         )
                     )}
                 </div>
-                <div className={this.state.gameStarted ? "score-container" : "hidden"}>
-                    <div className={this.state.playerTurn === 1 ? "score-counter current-player-turn"  : "score-counter none-player-turn"}>
-                        { this.state.cardsFound && this.state.pickedPack.map(
+
+                <div className={this.state.gameStarted ? "board-container" : " hidden"}>
+                    <div className="board">
+                        { this.state.shuffledCards.map(
                             (card, index) => (
-                                <div className={this.state.cardsFound[0].includes(card) ? "" : "greyed"} key={index} >{card}</div>
+                                <div className={this.state.pairs.includes(index) ? "flip-card pair" : "flip-card"} key={index} onClick={e => this.handleClick(card, index)}>
+                                    <div className={
+                                        this.state.firstSelectedIndex === index ||
+                                        this.state.secondSelectedIndex === index ? "flip-card-inner hightlighted" : "flip-card-inner"
+                                    }>
+                                        <div className="flip-card-front"></div>
+                                        <div className="flip-card-back">
+                                            {card}
+                                        </div>
+                                    </div>
+                                </div>
                             )
                         )}
                     </div>
-                    <div className={`${playerTwoTurn} ${twoPlayers}`}>
-                    { this.state.cardsFound && this.state.pickedPack.map(
-                        (card, index) => (
-                            <div className={this.state.cardsFound[1].includes(card) ? "" : "greyed"} key={index} >{card}</div>
-                        )
-                    )}
+                    <div className={this.state.gameStarted ? "score-container" : "hidden"}>
+                        <div className={this.state.playerTurn === 1 ? "score-counter current-player-turn"  : "score-counter none-player-turn"}>
+                            { this.state.cardsFound && this.state.pickedPack.map(
+                                (card, index) => (
+                                    <div className={this.state.cardsFound[0].includes(card) ? "" : "greyed"} key={index} >{card}</div>
+                                )
+                            )}
+                        </div>
+                        <div className={`${playerTwoTurn} ${twoPlayers}`}>
+                        { this.state.cardsFound && this.state.pickedPack.map(
+                            (card, index) => (
+                                <div className={this.state.cardsFound[1].includes(card) ? "" : "greyed"} key={index} >{card}</div>
+                            )
+                        )}
+                        </div>
                     </div>
-                </div>
-                <div className={this.state.gameStarted ? "board" : "board hidden"}>
-                    { this.state.shuffledCards.map(
-                        (card, index) => (
-                            <div className={this.state.pairs.includes(index) ? "flip-card pair" : "flip-card"} key={index} onClick={e => this.handleClick(card, index)}>
-                                <div className={
-                                    this.state.firstSelectedIndex === index ||
-                                    this.state.secondSelectedIndex === index ? "flip-card-inner hightlighted" : "flip-card-inner"
-                                }>
-                                    <div className="flip-card-front"></div>
-                                    <div className="flip-card-back">
-                                        {card}
-                                    </div>
-                                </div>
-                            </div>
-                        )
-                    )}
                 </div>
             </div>
         );
