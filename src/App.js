@@ -45,8 +45,8 @@ class App extends Component {
         })
         var totalCards = this.state.choiceOfPacks[deckNumber].concat(this.state.choiceOfPacks[deckNumber].slice());
         this.setState({
-            // shuffledCards: this.shuffleArray(totalCards),
-            shuffledCards: totalCards,
+            shuffledCards: this.shuffleArray(totalCards),
+            // shuffledCards: totalCards,
             pickedPack: this.state.choiceOfPacks[deckNumber]
         });
         if (this.state.gameModeSelected === "ultra") {
