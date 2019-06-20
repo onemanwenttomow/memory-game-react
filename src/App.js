@@ -172,7 +172,7 @@ function App() {
                     secondSelectedIndex: null,
                     isInMotion: false
                 })
-            setState({
+            state.numberOfPlayers === 1 && setState({
                 ...state,
                 selectedCards: [],
                 firstSelectedIndex: null,
