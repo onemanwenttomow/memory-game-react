@@ -1,40 +1,29 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import { StartGame } from './startgame';
 import { ScoreCard } from './scorecard';
 import { Board } from './board';
 import './App.css';
 
-class App extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            shuffledCards: [],
-            numberOfPlayers: 1,
-            restartGameButton: false,
-            gameOverButton: false,
-            gameModeSelected: "normal",
-            choiceOfPacks: [
-                ["🐶", "🐱", "🦄", "🐮", "🐷", "🐔", "🐸", "🦊", "🐵", "🦁", "🐺", "🦓"],
-                ["⚾", "⚽", "🏉", "🏈", "🎾", "🎳", "🏏", "🏑", "⛳",  "🥇", "🏄", "🎽"],
-                ["🚅", "🚂", "🚌", "🚑", "🚒", "🚓", "🚕", "🚚", "🏎️", "🏍️", "🚲", "✈️"]
-            ]
-        };
-        this.shuffleArray = this.shuffleArray.bind(this);
-        this.checkForPair = this.checkForPair.bind(this);
-        this.handleClick = this.handleClick.bind(this);
-        this.setupNewGame = this.setupNewGame.bind(this);
-        this.numberOfPlayers = this.numberOfPlayers.bind(this);
-        this.changeTurns = this.changeTurns.bind(this);
-        this.cardFound = this.cardFound.bind(this);
-        this.noCardFound = this.noCardFound.bind(this);
-        this.updateScore = this.updateScore.bind(this);
-        this.restartGame = this.restartGame.bind(this);
-        this.gameMode = this.gameMode.bind(this);
-        this.randomShuffle = this.randomShuffle.bind(this);
-    }
-    setupNewGame(deckNumber) {
-        this.setState({
-            shuffledCards: [],
+function App() {
+    const [state, setState] = useState({
+        shuffledCards: [],
+        numberOfPlayers: 1,
+        restartGameButton: false,
+        gameOverButton: false,
+        pairs: [],
+        gameModeSelected: "normal",
+        choiceOfPacks: [
+            ["🐶", "🐱", "🦄", "🐮", "🐷", "🐔", "🐸", "🦊", "🐵", "🦁", "🐺", "🦓"],
+            ["⚾", "⚽", "🏉", "🏈", "🎾", "🎳", "🏏", "🏑", "⛳",  "🥇", "🏄", "🎽"],
+            ["🚅", "🚂", "🚌", "🚑", "🚒", "🚓", "🚕", "🚚", "🏎️", "🏍️", "🚲", "✈️"]
+        ]
+    })
+
+    function setupNewGame(deckNumber) {
+        console.log("about to start game: ", deckNumber);
+        var totalCards = state.choiceOfPacks[deckNumber].concat(state.choiceOfPacks[deckNumber].slice());
+        setState({
+            ...state,
             selectedCards: [],
             firstSelectedIndex: null,
             secondSelectedIndex: null,
@@ -46,39 +35,40 @@ class App extends Component {
                 [], []
             ],
             playerTurn: 1,
-            turnsLeft: 25
+            turnsLeft: 25,
+            // shuffledCards: shuffleArray(totalCards),
+            shuffledCards: totalCards,
+            pickedPack: state.choiceOfPacks[deckNumber]
         })
-        var totalCards = this.state.choiceOfPacks[deckNumber].concat(this.state.choiceOfPacks[deckNumber].slice());
-        this.setState({
-            shuffledCards: this.shuffleArray(totalCards),
-            // shuffledCards: totalCards,
-            pickedPack: this.state.choiceOfPacks[deckNumber]
-        });
-        if (this.state.gameModeSelected === "ultra") {
-            this.randomShuffle();
+
+        if (state.gameModeSelected === "ultra") {
+            randomShuffle();
         }
     }
-    randomShuffle() {
+    function randomShuffle() {
         setTimeout(() => {
-            let totalCards = this.state.shuffledCards
-            this.setState({ shuffledCards: this.shuffleArray(totalCards) });
-            if (this.state.restartGameButton) {
+            let totalCards = state.shuffledCards
+            setState({
+                ...state,
+                shuffledCards: shuffleArray(totalCards)
+            });
+            if (state.restartGameButton) {
                 return;
             } else {
-                this.randomShuffle()
+                randomShuffle()
             }
         }, 15000)
     }
-    gameMode(mode) {
-        this.setState({gameModeSelected: mode})
+    function gameMode(mode) {
+        setState({...state, gameModeSelected: mode});
     }
-    numberOfPlayers(num) {
-        this.setState({numberOfPlayers: num});
+    function numberOfPlayers(num) {
+        setState({...state, numberOfPlayers: num});
     }
-    changeTurns() {
-        this.state.playerTurn === 1 ? this.setState({playerTurn: 2}) : this.setState({playerTurn: 1})
+    function changeTurns() {
+        state.playerTurn === 1 ? setState({...state, playerTurn: 2}) : setState({...state, playerTurn: 1})
     }
-    shuffleArray(array) {
+    function shuffleArray(array) {
         for (var i = array.length - 1; i > 0; i--) {
             var j = Math.floor(Math.random() * (i + 1));
             var temp = array[i];
@@ -87,21 +77,22 @@ class App extends Component {
         }
         return array;
     }
-    restartGame() {
-        this.setState({
+    function restartGame() {
+        setState({
+            ...state,
             gameStarted: false,
             restartGameButton: false,
             gameOverButton: false
         })
     }
-    handleClick(card, index) {
+    function handleClick(card, index) {
         // don't allow click during animation
-        if (this.state.isInMotion) { return; }
+        if (state.isInMotion) { return; }
         // grab the currently selected card (if any) from state
-        let currentSelectedCard = this.state.selectedCards;
+        let currentSelectedCard = state.selectedCards;
 
         // don't allow the user to click the same card again.
-        if (this.state.selectedCards.length === 1 && this.state.selectedCards[0].index === index) {
+        if (state.selectedCards.length === 1 && state.selectedCards[0].index === index) {
             return;
         }
         // add the current card and it's index an array.
@@ -109,41 +100,44 @@ class App extends Component {
 
         // if there is only 1 card selected. Update state.
         if (currentSelectedCard.length === 1) {
-            this.setState({
+            setState({
+                ...state,
                 selectedCards: currentSelectedCard,
                 firstSelectedIndex: index
             });
         // if 2 cards are selected.
         } else if (currentSelectedCard.length === 2) {
-            if (this.state.selectedCards[0].index === index) { return; }
+            if (state.selectedCards[0].index === index) { return; }
 
-            if (this.state.gameModeSelected === "hard")  {
-                var turnsLeft = this.state.turnsLeft;
+            if (state.gameModeSelected === "hard")  {
+                var turnsLeft = state.turnsLeft;
                 turnsLeft--;
                 if (turnsLeft === 0) {
-                    this.setState({gameOverButton: true});
+                    setState({...state, gameOverButton: true});
                 }
             }
-            this.setState({
+            setState({
+                ...state,
                 selectedCards: currentSelectedCard,
                 secondSelectedIndex: index,
                 isInMotion: true,
                 turnsLeft: turnsLeft
             });
             // and then check for a pair.
-            this.checkForPair() ? this.cardFound(card) : this.noCardFound();
+            checkForPair() ? cardFound(card) : noCardFound();
 
         }
     }
-    cardFound(card) {
+    function cardFound(card) {
         setTimeout(() => {
-            this.updateScore(card)
+            updateScore(card)
 
-            let newPairs = this.state.pairs;
-            newPairs.push(this.state.selectedCards[0].index, this.state.selectedCards[1].index);
-            let currentScore = this.state.currentScore;
+            let newPairs = state.pairs;
+            newPairs.push(state.selectedCards[0].index, state.selectedCards[1].index);
+            let currentScore = state.currentScore;
             currentScore ++;
-            this.setState({
+            setState({
+                ...state,
                 pairs: newPairs,
                 isInMotion: false,
                 currentScore: currentScore,
@@ -151,17 +145,18 @@ class App extends Component {
                 firstSelectedIndex: null,
                 secondSelectedIndex: null,
             })
-            if (currentScore === this.state.shuffledCards.length / 2) {
-                this.setState({ restartGameButton: true })
+            if (currentScore === state.shuffledCards.length / 2) {
+                setState({ ...state, restartGameButton: true })
             }
         }, 900)
     }
-    noCardFound() {
+    function noCardFound() {
         setTimeout(() => {
-            if (this.state.numberOfPlayers === 2) {
-                this.changeTurns();
+            if (state.numberOfPlayers === 2) {
+                changeTurns();
             }
-            this.setState({
+            setState({
+                ...state,
                 selectedCards: [],
                 firstSelectedIndex: null,
                 secondSelectedIndex: null,
@@ -169,66 +164,65 @@ class App extends Component {
             });
         }, 1000)
     }
-    checkForPair() {
-        if (this.state.selectedCards[0].card === this.state.selectedCards[1].card) {
-            this.setState({ isInMotion: true });
+    function checkForPair() {
+        if (state.selectedCards[0].card === state.selectedCards[1].card) {
             return true;
         }
     }
-    updateScore(card) {
-        let currentPlayerCards = this.state.cardsFound;
-        currentPlayerCards[this.state.playerTurn -1].push(card);
-        this.setState({ cardsFound: currentPlayerCards })
+    function updateScore(card) {
+        let currentPlayerCards = state.cardsFound;
+        currentPlayerCards[state.playerTurn -1].push(card);
+        setState({ ...state, cardsFound: currentPlayerCards })
     }
 
-    render() {
-        console.log(this.state);
-        return (
-            <div className="App">
 
-                <div className={this.state.restartGameButton ? "restart-button" : "hidden"} onClick={this.restartGame}>
-                    Restart
-                </div>
+    console.log(state);
+    return (
+        <div className="App">
 
-                <div className={this.state.gameOverButton ? "gameover-button" : "hidden"} onClick={this.restartGame}>
-                    Game Over!
-                </div>
+            <div className={state.restartGameButton ? "restart-button" : "hidden"} onClick={restartGame}>
+                Restart
+            </div>
 
-                <StartGame
-                    gameStarted={this.state.gameStarted}
-                    numberOfPlayers={this.numberOfPlayers}
-                    numPlayers={this.state.numberOfPlayers}
-                    gameMode={this.gameMode}
-                    gameModeSelected={this.state.gameModeSelected}
-                    choiceOfPacks={this.state.choiceOfPacks}
-                    setupNewGame={this.setupNewGame}
+            <div className={state.gameOverButton ? "gameover-button" : "hidden"} onClick={restartGame}>
+                Game Over!
+            </div>
+
+            <StartGame
+                gameStarted={state.gameStarted}
+                numberOfPlayers={numberOfPlayers}
+                numPlayers={state.numberOfPlayers}
+                gameMode={gameMode}
+                gameModeSelected={state.gameModeSelected}
+                choiceOfPacks={state.choiceOfPacks}
+                setupNewGame={setupNewGame}
+            />
+
+            <div className={state.gameStarted ? "board-container" : " hidden"}>
+
+                <Board
+                    shuffledCards={state.shuffledCards}
+                    pairs={state.pairs}
+                    firstSelectedIndex={state.firstSelectedIndex}
+                    secondSelectedIndex={state.secondSelectedIndex}
+                    handleClick={handleClick}
                 />
 
-                <div className={this.state.gameStarted ? "board-container" : " hidden"}>
+                <ScoreCard
+                    playerTwoTurn = {state.playerTurn === 2 ? "current-player-turn" : "none-player-turn"}
+                    twoPlayers = {state.numberOfPlayers === 2 ? "score-counter" : "hidden"}
+                    gameStarted={state.gameStarted}
+                    playerTurn={state.playerTurn}
+                    cardsFound={state.cardsFound}
+                    pickedPack={state.pickedPack}
+                    turnsLeft={state.turnsLeft}
+                    gameModeSelected={state.gameModeSelected}
+                />
 
-                    <Board
-                        shuffledCards={this.state.shuffledCards}
-                        pairs={this.state.pairs}
-                        firstSelectedIndex={this.state.firstSelectedIndex}
-                        secondSelectedIndex={this.state.secondSelectedIndex}
-                        handleClick={this.handleClick}
-                    />
-
-                    <ScoreCard
-                        playerTwoTurn = {this.state.playerTurn === 2 ? "current-player-turn" : "none-player-turn"}
-                        twoPlayers = {this.state.numberOfPlayers === 2 ? "score-counter" : "hidden"}
-                        gameStarted={this.state.gameStarted}
-                        playerTurn={this.state.playerTurn}
-                        cardsFound={this.state.cardsFound}
-                        pickedPack={this.state.pickedPack}
-                        turnsLeft={this.state.turnsLeft}
-                        gameModeSelected={this.state.gameModeSelected}
-                    />
-
-                </div>
             </div>
-        );
-    }
+        </div>
+    );
+
 }
 
 export default App;
