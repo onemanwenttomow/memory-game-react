@@ -21,7 +21,6 @@ function App() {
     })
 
     function setupNewGame(deckNumber) {
-        console.log("about to start game: ", deckNumber);
         var totalCards = state.choiceOfPacks[deckNumber].concat(state.choiceOfPacks[deckNumber].slice());
         let shuffledCards;
         state.shouldIShuffle ? shuffledCards = shuffleArray(totalCards) : shuffledCards = totalCards;
@@ -67,9 +66,6 @@ function App() {
     }
     function numberOfPlayers(num) {
         setState({...state, numberOfPlayers: num});
-    }
-    function changeTurns() {
-        state.playerTurn === 1 ? setState({...state, playerTurn: 2}) : setState({...state, playerTurn: 1})
     }
     function shuffleArray(array) {
         for (var i = array.length - 1; i > 0; i--) {
@@ -158,9 +154,24 @@ function App() {
     }
     function noCardFound() {
         setTimeout(() => {
-            if (state.numberOfPlayers === 2) {
-                changeTurns();
-            }
+
+            state.numberOfPlayers === 2 &&
+                state.playerTurn === 1 ? setState({
+                    ...state,
+                    playerTurn: 2,
+                    selectedCards: [],
+                    firstSelectedIndex: null,
+                    secondSelectedIndex: null,
+                    isInMotion: false
+                }) :
+                setState({
+                    ...state,
+                    playerTurn: 1,
+                    selectedCards: [],
+                    firstSelectedIndex: null,
+                    secondSelectedIndex: null,
+                    isInMotion: false
+                })
             setState({
                 ...state,
                 selectedCards: [],
