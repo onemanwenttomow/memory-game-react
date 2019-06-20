@@ -48,7 +48,9 @@ function App() {
         }
     }
     function randomShuffle() {
+        console.log("about to shuffle");
         setTimeout(() => {
+            console.log("shuffling");
             let totalCards = state.shuffledCards
             setState({
                 ...state,
@@ -110,13 +112,12 @@ function App() {
         // if 2 cards are selected.
         } else if (currentSelectedCard.length === 2) {
             if (state.selectedCards[0].index === index) { return; }
-
+            var turnsLeft = state.turnsLeft;
             if (state.gameModeSelected === "hard")  {
-                var turnsLeft = state.turnsLeft;
                 turnsLeft--;
-                if (turnsLeft === 0) {
-                    setState({...state, gameOverButton: true});
-                }
+            }
+            if (turnsLeft === 0) {
+                setState({...state, gameOverButton: true});
             }
             setState({
                 ...state,
@@ -126,11 +127,11 @@ function App() {
                 turnsLeft: turnsLeft
             });
             // and then check for a pair.
-            checkForPair() ? cardFound(card) : noCardFound();
+            checkForPair() ? cardFound(card, turnsLeft) : noCardFound(turnsLeft);
 
         }
     }
-    function cardFound(card) {
+    function cardFound(card, turnsLeft) {
         setTimeout(() => {
             updateScore(card)
 
@@ -146,13 +147,14 @@ function App() {
                 selectedCards: [],
                 firstSelectedIndex: null,
                 secondSelectedIndex: null,
+                turnsLeft: turnsLeft
             })
             if (currentScore === state.shuffledCards.length / 2) {
                 setState({ ...state, restartGameButton: true })
             }
         }, 900)
     }
-    function noCardFound() {
+    function noCardFound(turnsLeft) {
         setTimeout(() => {
 
             state.numberOfPlayers === 2 &&
@@ -162,7 +164,8 @@ function App() {
                     selectedCards: [],
                     firstSelectedIndex: null,
                     secondSelectedIndex: null,
-                    isInMotion: false
+                    isInMotion: false,
+                    turnsLeft: turnsLeft
                 }) :
                 setState({
                     ...state,
@@ -170,15 +173,18 @@ function App() {
                     selectedCards: [],
                     firstSelectedIndex: null,
                     secondSelectedIndex: null,
-                    isInMotion: false
+                    isInMotion: false,
+                    turnsLeft: turnsLeft
                 })
             state.numberOfPlayers === 1 && setState({
                 ...state,
+                playerTurn: 1,
                 selectedCards: [],
                 firstSelectedIndex: null,
                 secondSelectedIndex: null,
-                isInMotion: false
-            });
+                isInMotion: false,
+                turnsLeft: turnsLeft
+            })
         }, 1000)
     }
     function checkForPair() {

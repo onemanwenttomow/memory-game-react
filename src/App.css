@@ -45,6 +45,7 @@ body {
 
 .board-container {
     display: flex;
+    align-items: flex-start;
 }
 
 .flip-card {
