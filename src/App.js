@@ -10,6 +10,7 @@ function App() {
         numberOfPlayers: 1,
         restartGameButton: false,
         gameOverButton: false,
+        shouldIShuffle: true,
         pairs: [],
         gameModeSelected: "normal",
         choiceOfPacks: [
@@ -22,6 +23,9 @@ function App() {
     function setupNewGame(deckNumber) {
         console.log("about to start game: ", deckNumber);
         var totalCards = state.choiceOfPacks[deckNumber].concat(state.choiceOfPacks[deckNumber].slice());
+        let shuffledCards;
+        state.shouldIShuffle ? shuffledCards = shuffleArray(totalCards) : shuffledCards = totalCards;
+
         setState({
             ...state,
             selectedCards: [],
@@ -36,8 +40,7 @@ function App() {
             ],
             playerTurn: 1,
             turnsLeft: 25,
-            // shuffledCards: shuffleArray(totalCards),
-            shuffledCards: totalCards,
+            shuffledCards: shuffledCards,
             pickedPack: state.choiceOfPacks[deckNumber]
         })
 
@@ -76,6 +79,9 @@ function App() {
             array[j] = temp;
         }
         return array;
+    }
+    function unShuffle() {
+        setState({...state, shouldIShuffle: false});
     }
     function restartGame() {
         setState({
@@ -196,6 +202,7 @@ function App() {
                 gameModeSelected={state.gameModeSelected}
                 choiceOfPacks={state.choiceOfPacks}
                 setupNewGame={setupNewGame}
+                unShuffle={unShuffle}
             />
 
             <div className={state.gameStarted ? "board-container" : " hidden"}>

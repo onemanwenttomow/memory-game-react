@@ -5,7 +5,7 @@ export function StartGame(props) {
         <React.Fragment>
             <div className={props.gameStarted ? "hidden" : "options-container"}>
                 <div className={props.gameStarted ? "hidden" : "options"}>
-                    Players: {' '}
+                    Pla<span onClick={props.unShuffle}>y</span>ers: {' '}
                     <span onClick={() => props.numberOfPlayers(1)} className={props.numPlayers === 1 ? "num-players num-players-selected" : "num-players"}>1</span>
                     <span onClick={() => props.numberOfPlayers(2)} className={props.numPlayers === 2 ? "num-players num-players-selected" : "num-players"}>2</span>
                 </div>
